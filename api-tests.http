@@ -1,0 +1,328 @@
+### ===========================================
+### DRI Commerce Backend - API Tests
+### ===========================================
+
+@baseUrl = http://localhost:8080
+@usersPath = /api/v1/users
+@authPath = /api/v1/auth
+
+### ===========================================
+### AUTH VARIABLES (serão preenchidas após login)
+### ===========================================
+
+@accessToken = 
+@refreshToken =
+
+### ===========================================
+### ===========================================
+### AUTHENTICATION TESTS
+### ===========================================
+### ===========================================
+
+### ===========================================
+### 1. Login (POST) - Obter tokens
+### IMPORTANTE: Execute isso primeiro para obter os tokens
+### ===========================================
+
+POST {{baseUrl}}{{authPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "joao.silva@email.com",
+  "password": "SenhaForte@123"
+}
+
+### ===========================================
+### 2. Login - Invalid Credentials (401)
+### ===========================================
+
+POST {{baseUrl}}{{authPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "wrong@email.com",
+  "password": "WrongPass@123"
+}
+
+### ===========================================
+### 3. Login - Missing Email (400)
+### ===========================================
+
+POST {{baseUrl}}{{authPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "password": "SenhaForte@123"
+}
+
+### ===========================================
+### 4. Login - Invalid Email Format (400)
+### ===========================================
+
+POST {{baseUrl}}{{authPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "invalid-email",
+  "password": "SenhaForte@123"
+}
+
+### ===========================================
+### 5. Login - Missing Password (400)
+### ===========================================
+
+POST {{baseUrl}}{{authPath}}/login HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "joao.silva@email.com"
+}
+
+### ===========================================
+### ===========================================
+### USER MANAGEMENT TESTS
+### ===========================================
+### ===========================================
+
+### ===========================================
+### 6. Health Check
+### ===========================================
+
+GET {{baseUrl}}/health HTTP/1.1
+
+### ===========================================
+### 7. Create User (POST) - Registro público
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João Silva",
+  "email": "joao.silva@email.com",
+  "password": "SenhaForte@123",
+  "role": "CUSTOMER"
+}
+
+### ===========================================
+### 3. Create Another User
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Maria Santos",
+  "email": "maria.santos@email.com",
+  "password": "MariaPass@456",
+  "role": "SELLER"
+}
+
+### ===========================================
+### 4. Get User by ID (GET)
+### IMPORTANTE: Substitua {userId} pelo ID retornado no create
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}}/68eafe4502da1535a8561f6b HTTP/1.1
+
+### ===========================================
+### 5. List All Users (GET) - Default Pagination
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}} HTTP/1.1
+
+### ===========================================
+### 6. List Users with Pagination (GET)
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}}?page=1&pageSize=5 HTTP/1.1
+
+### ===========================================
+### 7. Update User (PUT)
+### IMPORTANTE: Substitua {userId} pelo ID válido
+### ===========================================
+
+PUT {{baseUrl}}{{usersPath}}/68eafde302da1535a8561f6a HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "João Pedro Silva",
+  "email": "joao.pedro@email.com"
+}
+
+### ===========================================
+### 8. Update User - Partial Update (only name)
+### ===========================================
+
+PUT {{baseUrl}}{{usersPath}}/68e18c0e25fe45239a503f6c HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Maria Silva Updated"
+}
+
+### ===========================================
+### 9. Update User - Partial Update (only email)
+### ===========================================
+
+PUT {{baseUrl}}{{usersPath}}/68e18c0e25fe45239a503f6c HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "maria.updated@email.com"
+}
+
+### ===========================================
+### 10. Delete User (DELETE)
+### IMPORTANTE: Substitua {userId} pelo ID válido
+### ===========================================
+
+DELETE {{baseUrl}}{{usersPath}}/68e18c0e25fe45239a503f6c HTTP/1.1
+
+### ===========================================
+### TESTES DE VALIDAÇÃO (Devem retornar erro)
+### ===========================================
+
+### 11. Create User - Missing Name (400)
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "test@email.com",
+  "password": "SenhaForte@123",
+  "role": "CUSTOMER"
+}
+
+### ===========================================
+### 12. Create User - Invalid Email (400)
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "invalid-email",
+  "password": "SenhaForte@123",
+  "role": "CUSTOMER"
+}
+
+### ===========================================
+### 13. Create User - Weak Password (400)
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test@email.com",
+  "password": "123",
+  "role": "CUSTOMER"
+}
+
+### ===========================================
+### 14. Create User - Duplicate Email (409)
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Duplicate User",
+  "email": "joao.silva@email.com",
+  "password": "SenhaForte@123",
+  "role": "CUSTOMER"
+}
+
+### ===========================================
+### 15. Get User - Invalid ID Format (400)
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}}/invalid-id HTTP/1.1
+
+### ===========================================
+### 16. Get User - Non-Existent ID (404)
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}}/507f1f77bcf86cd799439099 HTTP/1.1
+
+### ===========================================
+### 17. Update User - Invalid ID (400)
+### ===========================================
+
+PUT {{baseUrl}}{{usersPath}}/abc123 HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test Update",
+  "email": "test@email.com"
+}
+
+### ===========================================
+### 18. Delete User - Non-Existent ID (404)
+### ===========================================
+
+DELETE {{baseUrl}}{{usersPath}}/507f1f77bcf86cd799439099 HTTP/1.1
+
+### ===========================================
+### 19. Create User - Missing Role (400)
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "test.role@email.com",
+  "password": "SenhaForte@123"
+}
+
+### ===========================================
+### TESTES AVANÇADOS
+### ===========================================
+
+### 20. List Users - Page 2
+
+GET {{baseUrl}}{{usersPath}}?page=2&pageSize=3 HTTP/1.1
+
+### ===========================================
+### 21. List Users - Large Page Size
+### ===========================================
+
+GET {{baseUrl}}{{usersPath}}?page=1&pageSize=50 HTTP/1.1
+
+### ===========================================
+### 22. Create Admin User
+### ===========================================
+
+POST {{baseUrl}}{{usersPath}} HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Admin User",
+  "email": "admin@email.com",
+  "password": "AdminPass@123",
+  "role": "ADMIN"
+}
+
+### ===========================================
+### NOTAS:
+### ===========================================
+### 
+### 1. Instale a extensão "REST Client" no VS Code
+### 2. Clique em "Send Request" acima de cada requisição
+### 3. Substitua os IDs pelos valores reais retornados nas respostas
+### 4. A API deve estar rodando em localhost:8080
+### 5. MongoDB deve estar rodando (docker-compose up)
+### 
+### Status Codes Esperados:
+### - 200: Success (GET, PUT, DELETE)
+### - 201: Created (POST)
+### - 400: Bad Request (validação falhou)
+### - 404: Not Found (recurso não existe)
+### - 409: Conflict (email duplicado)
+### - 500: Internal Server Error (erro inesperado)
+### 
+### ===========================================

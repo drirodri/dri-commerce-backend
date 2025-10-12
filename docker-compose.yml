@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:8.0
+    container_name: dri-commerce-mongodb
+    restart: always
+    ports:
+      - "27018:27017" # MUDADO: Porta externa 27018 para evitar conflito
+    environment:
+      MONGO_INITDB_DATABASE: dri-commerce
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - dri-commerce-network
+
+  # Backend Quarkus - DEV Mode com Hot Reload
+  backend:
+    image: maven:3.9.9-eclipse-temurin-21-alpine
+    container_name: dri-commerce-backend
+    working_dir: /app
+    command: ./mvnw compile quarkus:dev -Dquarkus.http.host=0.0.0.0 -Dquarkus.test.continuous-testing=disabled
+    ports:
+      - "8080:8080"
+      - "5005:5005" # Porta de debug
+    environment:
+      # Conecta ao MongoDB container
+      QUARKUS_MONGODB_CONNECTION_STRING: mongodb://mongodb:27017
+      QUARKUS_MONGODB_DATABASE: dri-commerce
+      QUARKUS_HTTP_HOST: 0.0.0.0
+      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_ANALYTICS_DISABLED: "true"
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2 # Cache do Maven
+    depends_on:
+      - mongodb
+    networks:
+      - dri-commerce-network
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongodb_data:
+
+networks:
+  dri-commerce-network:
+    driver: bridge

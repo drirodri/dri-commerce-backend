@@ -1,0 +1,22 @@
+# Ignora arquivos desnecessários no build Docker
+target/
+!target/quarkus-app/
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Outros
+*.log
+*.tmp

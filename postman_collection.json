@@ -1,0 +1,830 @@
+{
+  "info": {
+    "_postman_id": "dri-commerce-backend-collection",
+    "name": "DRI Commerce Backend API",
+    "description": "Coleção completa de testes da API DRI Commerce Backend com autenticação JWT",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('accessToken', response.token);",
+                  "    pm.environment.set('refreshToken', response.refreshToken);",
+                  "    pm.environment.set('tokenType', response.tokenType);",
+                  "    console.log('✅ Tokens salvos no ambiente');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"SenhaForte@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/login",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["login"]
+            },
+            "description": "Autentica usuário e retorna tokens JWT (access token e refresh token)"
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Invalid Credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wrong@email.com\",\n  \"password\": \"WrongPass@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/login",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["login"]
+            },
+            "description": "Deve retornar 401 - Unauthorized"
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Missing Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"SenhaForte@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/login",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["login"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Invalid Email Format",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid-email\",\n  \"password\": \"SenhaForte@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/login",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["login"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Missing Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"joao.silva@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/login",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["login"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('accessToken', response.token);",
+                  "    console.log('✅ Access token renovado:', response.token.substring(0, 20) + '...');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/refresh",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["refresh"]
+            },
+            "description": "Renova o access token usando um refresh token válido. Execute o Login primeiro para obter um refresh token."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token - Invalid Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"invalid.token.here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/refresh",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["refresh"]
+            },
+            "description": "Deve retornar 403 - Forbidden"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token - Missing Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/refresh",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["refresh"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token - Using Access Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{accessToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/refresh",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["refresh"]
+            },
+            "description": "Tenta usar um access token ao invés de refresh token. Deve retornar 403 - Forbidden"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{authPath}}/me",
+              "host": ["{{baseUrl}}{{authPath}}"],
+              "path": ["me"]
+            },
+            "description": "Retorna os dados do usuário atualmente autenticado. Requer token JWT válido. Acessível por ADMIN, CUSTOMER e SELLER."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints de autenticação (login e refresh token)"
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Create User (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('userId', response.id);",
+                  "    console.log('✅ User ID salvo:', response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Silva\",\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"SenhaForte@123\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Cria um novo usuário com role CUSTOMER"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User (Seller)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Santos\",\n  \"email\": \"maria.santos@email.com\",\n  \"password\": \"MariaPass@456\",\n  \"role\": \"SELLER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Cria um novo usuário com role SELLER"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@email.com\",\n  \"password\": \"AdminPass@123\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Cria um novo usuário com role ADMIN"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}"]
+            },
+            "description": "Busca usuário por ID. ADMIN pode ver qualquer usuário, CUSTOMER/SELLER apenas seus próprios dados."
+          },
+          "response": []
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Lista todos os usuários com paginação padrão. Apenas ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "List Users with Pagination",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}?page=1&pageSize=5",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Lista usuários com paginação personalizada. Apenas ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"João Pedro Silva\",\n  \"email\": \"joao.pedro@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}"]
+            },
+            "description": "Atualiza dados do usuário. ADMIN pode atualizar qualquer usuário, CUSTOMER/SELLER apenas seus próprios dados."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User - Partial (Name)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Maria Silva Updated\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}"]
+            },
+            "description": "Atualização parcial - apenas nome"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User - Partial (Email)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria.updated@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}"]
+            },
+            "description": "Atualização parcial - apenas email"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate User (Soft Delete)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}"]
+            },
+            "description": "Desativa usuário (soft delete - não deleta fisicamente). Apenas ADMIN pode desativar usuários."
+          },
+          "response": []
+        },
+        {
+          "name": "Activate User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/{{userId}}/activate",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["{{userId}}", "activate"]
+            },
+            "description": "Reativa um usuário previamente desativado. Apenas ADMIN pode reativar usuários."
+          },
+          "response": []
+        }
+      ],
+      "description": "Operações CRUD de usuários"
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "Create User - Missing Name",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@email.com\",\n  \"password\": \"SenhaForte@123\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User - Invalid Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"invalid-email\",\n  \"password\": \"SenhaForte@123\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User - Weak Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@email.com\",\n  \"password\": \"123\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User - Missing Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test.role@email.com\",\n  \"password\": \"SenhaForte@123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User - Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"joao.silva@email.com\",\n  \"password\": \"SenhaForte@123\",\n  \"role\": \"CUSTOMER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}",
+              "host": ["{{baseUrl}}{{usersPath}}"]
+            },
+            "description": "Deve retornar 409 - Conflict"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User - Invalid ID Format",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/invalid-id",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["invalid-id"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User - Non-Existent ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/507f1f77bcf86cd799439099",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["507f1f77bcf86cd799439099"]
+            },
+            "description": "Deve retornar 404 - Not Found"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User - Invalid ID",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Update\",\n  \"email\": \"test@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/abc123",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["abc123"]
+            },
+            "description": "Deve retornar 400 - Bad Request"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User - Non-Existent ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{usersPath}}/507f1f77bcf86cd799439099",
+              "host": ["{{baseUrl}}{{usersPath}}"],
+              "path": ["507f1f77bcf86cd799439099"]
+            },
+            "description": "Deve retornar 404 - Not Found"
+          },
+          "response": []
+        }
+      ],
+      "description": "Testes de validação e casos de erro"
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Verifica status de saúde da aplicação"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "usersPath",
+      "value": "/api/v1/users",
+      "type": "string"
+    },
+    {
+      "key": "authPath",
+      "value": "/api/v1/auth",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "tokenType",
+      "value": "Bearer",
+      "type": "string"
+    }
+  ]
+}
