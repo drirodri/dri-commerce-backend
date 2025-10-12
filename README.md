@@ -57,7 +57,7 @@ Dev UI: http://localhost:8080/q/dev
 
 ## Endpoints Principais
 
-### AutenticacaoThe application can be packaged using:
+### Autenticacao
 
 - `POST /api/v1/auth/login` - Login (rate limit: 5 tentativas/15min)
 
@@ -150,16 +150,6 @@ jwt.refresh.ttl=604800
 rate-limit.login.max-attempts=5
 rate-limit.login.window-minutes=15
 ```
-
-## Testando a API
-
-### Postman
-
-Importe os arquivos:You can create a native executable using:
-
-- `postman_collection.json` - Collection completa
-
-- `postman_environment.json` - Variaveis de ambiente
 
 ## Estrutura do Projeto
 
