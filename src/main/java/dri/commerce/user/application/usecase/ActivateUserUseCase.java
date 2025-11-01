@@ -35,7 +35,7 @@ public class ActivateUserUseCase {
 
         UserDomain activatedUser = user.activate();
 
-        userRepository.save(activatedUser);
+        userRepository.update(activatedUser);
 
         return activatedUser;
     }

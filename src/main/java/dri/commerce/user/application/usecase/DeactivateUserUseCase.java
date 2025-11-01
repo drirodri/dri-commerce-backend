@@ -37,6 +37,6 @@ public class DeactivateUserUseCase {
 
         UserDomain deactivatedUser = user.deactivate();
 
-        userRepository.save(deactivatedUser);
+        userRepository.update(deactivatedUser);
     }
 }
