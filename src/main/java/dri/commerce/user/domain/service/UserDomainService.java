@@ -110,6 +110,36 @@ public class UserDomainService {
     }
 
     /**
+     * Atualiza informações de um usuário por um administrador
+     * Permite alterar nome, email, role e status sem modificar a senha
+     * 
+     * @param currentUser Usuário atual a ser atualizado
+     * @param newName Novo nome (opcional, mantém o atual se null)
+     * @param newEmail Novo email (opcional, mantém o atual se null)
+     * @param newRole Novo papel/role (opcional, mantém o atual se null)
+     * @param active Novo status ativo/inativo (opcional, mantém o atual se null)
+     * @return UserDomain atualizado
+     */
+    public UserDomain adminUpdateUser(UserDomain currentUser, String newName, String newEmail, Role newRole, Boolean active) {
+        String finalName = newName != null ? newName : currentUser.name();
+        UserEmail finalEmail = newEmail != null ? new UserEmail(newEmail) : currentUser.email();
+
+        userValidationService.validateUserUpdate(currentUser, newName, finalEmail);
+
+        UserDomain updatedUser = currentUser.updateInfo(finalName, finalEmail);
+
+        if (newRole != null && newRole != currentUser.role()) {
+            updatedUser = updatedUser.updateRole(newRole);
+        }
+
+        if (active != null && active != currentUser.isActive()) {
+            updatedUser = active ? updatedUser.activate() : updatedUser.deactivate();
+        }
+
+        return updatedUser;
+    }
+
+    /**
      * Verifica se um usuário pode realizar login
      * Regra de negócio: apenas usuários ativos podem fazer login
      * 
