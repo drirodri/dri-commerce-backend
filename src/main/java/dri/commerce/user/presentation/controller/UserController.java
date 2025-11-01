@@ -3,6 +3,7 @@ package dri.commerce.user.presentation.controller;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import dri.commerce.user.application.usecase.ActivateUserUseCase;
+import dri.commerce.user.application.usecase.AdminUpdateUserUseCase;
 import dri.commerce.user.application.usecase.CreateUserUseCase;
 import dri.commerce.user.application.usecase.DeactivateUserUseCase;
 import dri.commerce.user.application.usecase.FindUserByIdUseCase;
@@ -10,6 +11,7 @@ import dri.commerce.user.application.usecase.ListAllUsersUseCase;
 import dri.commerce.user.application.usecase.UpdateUserUseCase;
 import dri.commerce.user.domain.entity.Page;
 import dri.commerce.user.domain.entity.UserDomain;
+import dri.commerce.user.presentation.dto.request.AdminUpdateUserRequest;
 import dri.commerce.user.presentation.dto.request.CreateUserRequest;
 import dri.commerce.user.presentation.dto.request.UpdateUserRequest;
 import dri.commerce.user.presentation.dto.response.MessageResponse;
@@ -59,6 +61,9 @@ public class UserController {
     ActivateUserUseCase activateUserUseCase;
 
     @Inject
+    AdminUpdateUserUseCase adminUpdateUserUseCase;
+
+    @Inject
     JsonWebToken jwt;
 
     @Context
@@ -69,16 +74,46 @@ public class UserController {
      * POST /api/v1/users
      * 
      * Acesso: Publico (@PermitAll)
-     * Qualquer pessoa pode se registrar como CUSTOMER
+     * Qualquer pessoa pode se registrar como CUSTOMER ou SELLER
+     * Bloqueio: Não permite criação de ADMIN via endpoint público
      */
     @POST
     @PermitAll
     public Response createUser(@Valid CreateUserRequest request) {
+        if (request.role() == dri.commerce.user.domain.enums.Role.ADMIN) {
+            throw new ForbiddenException("Não é permitido criar usuários ADMIN por este endpoint");
+        }
+
         UserDomain user = createUserUseCase.execute(
                 request.name(),
                 request.email(),
                 request.password(),
                 request.role()
+        );
+
+        UserResponse response = UserResponse.fromDomain(user);
+
+        return Response.status(Response.Status.CREATED)
+                .entity(response)
+                .build();
+    }
+
+    /**
+     * Cria um novo ADMIN (apenas ADMIN pode criar outro ADMIN)
+     * POST /api/v1/users/admin
+     * 
+     * Acesso: Apenas ADMIN
+     */
+    @POST
+    @Path("/admin")
+    @RolesAllowed({"ADMIN"})
+    public Response createAdmin(@Valid CreateUserRequest request) {
+        // Força o role para ADMIN
+        UserDomain user = createUserUseCase.execute(
+                request.name(),
+                request.email(),
+                request.password(),
+                dri.commerce.user.domain.enums.Role.ADMIN
         );
 
         UserResponse response = UserResponse.fromDomain(user);
@@ -205,6 +240,33 @@ public class UserController {
     @RolesAllowed({"ADMIN"})
     public Response activateUser(@PathParam("id") String id) {
         UserDomain user = activateUserUseCase.execute(id);
+
+        UserResponse response = UserResponse.fromDomain(user);
+
+        return Response.ok(response).build();
+    }
+
+    /**
+     * Atualiza dados de usuario por um admin (pode alterar role e status)
+     * PUT /api/v1/users/{id}/admin
+     * 
+     * Acesso: Apenas ADMIN
+     * Permite alterar nome, email, role e status sem modificar senha
+     */
+    @PUT
+    @Path("/{id}/admin")
+    @RolesAllowed({"ADMIN"})
+    public Response adminUpdateUser(
+            @PathParam("id") String id,
+            @Valid AdminUpdateUserRequest request
+    ) {
+        UserDomain user = adminUpdateUserUseCase.execute(
+                id,
+                request.name(),
+                request.email(),
+                request.role(), 
+                request.active()
+        );
 
         UserResponse response = UserResponse.fromDomain(user);
 
