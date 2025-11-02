@@ -1,15 +1,14 @@
 package dri.commerce.user.infrastructure;
 
+import org.jboss.logging.Logger;
+
 import dri.commerce.user.application.usecase.CreateUserUseCase;
 import dri.commerce.user.domain.entity.UserDomain;
 import dri.commerce.user.domain.enums.Role;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
-import org.jboss.logging.Logger;
-
 import io.quarkus.runtime.StartupEvent;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class DatabaseAdminSeeder {
@@ -20,9 +19,9 @@ public class DatabaseAdminSeeder {
 
     void seedAdmin(@Observes StartupEvent event) {
         LOG.info("DatabaseAdminSeeder: inicializando seed do admin...");
-        String adminEmail = "admin@dricommerce.com";
-        String adminName = "Admin Principal";
-        String adminPassword = "Admin@Dri123";
+        String adminEmail = System.getenv().getOrDefault("ADMIN_EMAIL", "default@admin.com");
+        String adminName = System.getenv().getOrDefault("ADMIN_NAME", "Default Admin");
+        String adminPassword = System.getenv().getOrDefault("ADMIN_PASSWORD", "DefaultAdmin123!");
         try {
             UserDomain admin = createUserUseCase.execute(adminName, adminEmail, adminPassword, Role.ADMIN);
             LOG.infof("Usuário ADMIN criado: %s (%s)", admin.name(), admin.email().value());
