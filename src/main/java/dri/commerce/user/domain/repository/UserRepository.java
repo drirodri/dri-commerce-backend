@@ -20,7 +20,7 @@ public interface UserRepository {
 
     List<UserDomain> findAllActive();
 
-    List<UserDomain> findAll();
+    List<UserDomain> getAllUsers();
 
     Page<UserDomain> findAll(int page, int pageSize);
 

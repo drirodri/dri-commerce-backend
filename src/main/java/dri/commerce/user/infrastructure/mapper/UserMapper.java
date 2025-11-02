@@ -33,20 +33,20 @@ public class UserMapper {
             return null;
         }
 
-        UserId id = infraUser.id() != null ? UserId.from(infraUser.id()) : null;
-        UserEmail email = new UserEmail(infraUser.email());
-        UserPassword password = new UserPassword(infraUser.password());
-        Role role = Role.fromCode(infraUser.role());
+        UserId id = infraUser.id != null ? UserId.from(infraUser.id) : null;
+        UserEmail email = new UserEmail(infraUser.email);
+        UserPassword password = new UserPassword(infraUser.password);
+        Role role = Role.fromCode(infraUser.role);
 
         return UserDomain.restore(
                 id,
-                infraUser.name(),
+                infraUser.name,
                 email,
                 password,
                 role,
-                infraUser.createdAt(),
-                infraUser.updatedAt(),
-                infraUser.active()
+                infraUser.createdAt,
+                infraUser.updatedAt,
+                infraUser.active
         );
     }
 }
