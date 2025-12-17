@@ -1,0 +1,229 @@
+{
+  "info": {
+    "name": "Product API - Dri Commerce",
+    "_postman_id": "product-api-collection",
+    "description": "Collection para testar os endpoints de produtos do Dri Commerce",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "Token JWT do usuário autenticado (SELLER ou ADMIN)"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Notebook Dell Inspiron 15\",\n  \"price\": 3500.00,\n  \"thumbnail\": \"https://example.com/images/notebook-dell.jpg\",\n  \"availableQuantity\": 10,\n  \"condition\": \"NEW\",\n  \"categoryId\": \"electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Cria um novo produto. Requer autenticação e role SELLER ou ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "Token JWT do usuário autenticado (SELLER ou ADMIN)"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Notebook Dell Inspiron 15 - Atualizado\",\n  \"price\": 3200.00,\n  \"thumbnail\": \"https://example.com/images/notebook-dell-updated.jpg\",\n  \"availableQuantity\": 8,\n  \"condition\": \"NEW\",\n  \"categoryId\": \"electronics\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}"]
+            },
+            "description": "Atualiza um produto existente. Requer autenticação e role SELLER ou ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}"]
+            },
+            "description": "Busca um produto específico por ID. Endpoint público, não requer autenticação."
+          },
+          "response": []
+        },
+        {
+          "name": "List Products (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products?page=0&pageSize=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Número da página (default: 0)"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20",
+                  "description": "Quantidade de itens por página (default: 20)"
+                }
+              ]
+            },
+            "description": "Lista produtos com paginação. Endpoint público, não requer autenticação."
+          },
+          "response": []
+        },
+        {
+          "name": "List Products (Default Pagination)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Lista produtos usando paginação padrão (page=0, pageSize=20). Endpoint público."
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "Token JWT do usuário autenticado (SELLER ou ADMIN)"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/{{product_id}}/deactivate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}", "deactivate"]
+            },
+            "description": "Desativa um produto. Requer autenticação e role SELLER ou ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Product",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "Token JWT do usuário autenticado (SELLER ou ADMIN)"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/{{product_id}}/activate",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}", "activate"]
+            },
+            "description": "Ativa um produto. Requer autenticação e role SELLER ou ADMIN."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "Token JWT do usuário autenticado (ADMIN apenas)"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/{{product_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "{{product_id}}"]
+            },
+            "description": "Deleta (desativa) um produto. Requer autenticação e role ADMIN."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "product_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

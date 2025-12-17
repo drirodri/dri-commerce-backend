@@ -5,6 +5,8 @@ import java.util.List;
 import dri.commerce.auth.domain.exception.InvalidCredentialsException;
 import dri.commerce.auth.domain.exception.InvalidTokenException;
 import dri.commerce.auth.domain.exception.RateLimitExceededException;
+import dri.commerce.product.domain.exception.InsufficientStockException;
+import dri.commerce.product.domain.exception.ProductNotFoundException;
 import dri.commerce.user.domain.exception.EmailAlreadyExistsException;
 import dri.commerce.user.domain.exception.UserNotFoundException;
 import dri.commerce.user.domain.exception.WeakPasswordException;
@@ -22,8 +24,10 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     public Response toResponse(Exception exception) {
         return switch (exception) {
             case UserNotFoundException ex -> handleNotFound(ex);
+            case ProductNotFoundException ex -> handleProductNotFound(ex);
             case EmailAlreadyExistsException ex -> handleConflict(ex);
             case WeakPasswordException ex -> handleBadRequest(ex);
+            case InsufficientStockException ex -> handleInsufficientStock(ex);
             case InvalidCredentialsException ex -> handleUnauthorized(ex);
             case InvalidTokenException ex -> handleForbidden(ex);
             case RateLimitExceededException ex -> handleTooManyRequests(ex);
@@ -35,6 +39,16 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     private Response handleNotFound(UserNotFoundException ex) {
         ErrorResponse error = ErrorResponse.of(404, "Not Found", ex.getMessage());
         return Response.status(404).entity(error).build();
+    }
+
+    private Response handleProductNotFound(ProductNotFoundException ex) {
+        ErrorResponse error = ErrorResponse.of(404, "Not Found", ex.getMessage());
+        return Response.status(404).entity(error).build();
+    }
+
+    private Response handleInsufficientStock(InsufficientStockException ex) {
+        ErrorResponse error = ErrorResponse.of(400, "Bad Request", ex.getMessage());
+        return Response.status(400).entity(error).build();
     }
 
     private Response handleConflict(EmailAlreadyExistsException ex) {
