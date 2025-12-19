@@ -98,40 +98,6 @@ public class RateLimitService {
         );
     }
 
-    // ========== Métodos legados para compatibilidade ==========
-    
-    /**
-     * @deprecated Use allowRequest(String, int, int) para mais flexibilidade
-     */
-    @Deprecated
-    public boolean allowLogin(String ipAddress) {
-        return allowRequest(ipAddress, maxAttempts, windowMinutes);
-    }
-
-    /**
-     * @deprecated Use recordSuccess(String) para mais flexibilidade
-     */
-    @Deprecated
-    public void recordSuccessfulLogin(String ipAddress) {
-        recordSuccess(ipAddress);
-    }
-
-    /**
-     * @deprecated Use getRemainingAttempts(String, int, int) para mais flexibilidade
-     */
-    @Deprecated
-    public int getRemainingAttempts(String ipAddress) {
-        return getRemainingAttempts(ipAddress, maxAttempts, windowMinutes);
-    }
-
-    /**
-     * @deprecated Use getMinutesUntilReset(String, int) para mais flexibilidade
-     */
-    @Deprecated
-    public long getMinutesUntilReset(String ipAddress) {
-        return getMinutesUntilReset(ipAddress, windowMinutes);
-    }
-
     /**
      * Record que armazena informacoes sobre tentativas de rate limit
      * 

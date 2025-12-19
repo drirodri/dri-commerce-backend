@@ -76,7 +76,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Page<ProductDomain> findAll(int page, int pageSize) {
         PanacheQuery<ProductEntity> query = ProductEntity.findAll(Sort.descending("createdAt"));
-        query.page(page, pageSize);
+        query.page(page - 1, pageSize); // API é 1-indexed, Panache é 0-indexed
 
         List<ProductDomain> products = query.list()
                 .stream()

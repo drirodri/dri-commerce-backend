@@ -110,7 +110,7 @@ public class ProductController {
 
     @GET
     public Response listProducts(@BeanParam PageRequest pageRequest) {
-        int page = Objects.requireNonNullElse(pageRequest.page(), 0);
+        int page = Objects.requireNonNullElse(pageRequest.page(), 1);
         int pageSize = Objects.requireNonNullElse(pageRequest.pageSize(), 20);
 
         Page<ProductDomain> productPage = listAllProductsUseCase.execute(page, pageSize);

@@ -98,7 +98,12 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     }
 
     private Response handleGenericError(Exception ex) {
-        ErrorResponse error = ErrorResponse.of(500, "Internal Server Error", "An unexpected error occurred", List.of(ex.getMessage()));
+        // Log completo interno para debugging
+        java.util.logging.Logger.getLogger(GlobalExceptionHandler.class.getName())
+            .severe("Erro interno não tratado: " + ex.getMessage());
+        
+        // Mensagem genérica para o cliente - não expõe detalhes internos
+        ErrorResponse error = ErrorResponse.of(500, "Internal Server Error", "An unexpected error occurred");
         return Response.status(500).entity(error).build();
     }
 }
