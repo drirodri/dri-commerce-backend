@@ -9,10 +9,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "products")
+@Table(name = "products", indexes = {
+    @Index(name = "idx_product_seller", columnList = "seller_id"),
+    @Index(name = "idx_product_category", columnList = "category_id"),
+    @Index(name = "idx_product_active", columnList = "active")
+})
 public class ProductEntity extends PanacheEntityBase {
 
     @Id

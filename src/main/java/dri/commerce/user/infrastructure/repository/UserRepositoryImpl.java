@@ -97,11 +97,11 @@ public class UserRepositoryImpl implements PanacheRepositoryBase<UserEntity, Str
 
     @Override
     public long count() {
-        return listAll().size();
+        return UserEntity.count();
     }
 
     private long total() {
-        return listAll().size();
+        return UserEntity.count();
     }
 
     @Override
