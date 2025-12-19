@@ -110,12 +110,47 @@ public class ProductController {
 
     @GET
     public Response listProducts(@BeanParam PageRequest pageRequest) {
-        int page = Objects.requireNonNullElse(pageRequest.page(), 1);
-        int pageSize = Objects.requireNonNullElse(pageRequest.pageSize(), 20);
+        int page = pageRequest.page() != null ? pageRequest.page() : 1;
+        int pageSize = pageRequest.pageSize() != null ? pageRequest.pageSize() : 20;
 
-        Page<ProductDomain> productPage = listAllProductsUseCase.execute(page, pageSize);
+        Page<ProductDomain> productPage = listAllProductsUseCase.executePublic(page, pageSize);
 
-        Page<ProductResponse> responsePage = new Page<>(
+        ProductListResponse response = ProductListResponse.fromPage(toResponsePage(productPage));
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/my")
+    @RolesAllowed("SELLER")
+    public Response listMyProducts(
+            @BeanParam PageRequest pageRequest,
+            @Context SecurityContext securityContext
+    ) {
+        int page = pageRequest.page() != null ? pageRequest.page() : 1;
+        int pageSize = pageRequest.pageSize() != null ? pageRequest.pageSize() : 20;
+        String sellerId = securityContext.getUserPrincipal().getName();
+
+        Page<ProductDomain> productPage = listAllProductsUseCase.executeBySeller(page, pageSize, sellerId);
+
+        ProductListResponse response = ProductListResponse.fromPage(toResponsePage(productPage));
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/all")
+    @RolesAllowed("ADMIN")
+    public Response listAllProducts(@BeanParam PageRequest pageRequest) {
+        int page = pageRequest.page() != null ? pageRequest.page() : 1;
+        int pageSize = pageRequest.pageSize() != null ? pageRequest.pageSize() : 20;
+
+        Page<ProductDomain> productPage = listAllProductsUseCase.executeAdmin(page, pageSize);
+
+        ProductListResponse response = ProductListResponse.fromPage(toResponsePage(productPage));
+        return Response.ok(response).build();
+    }
+
+    private Page<ProductResponse> toResponsePage(Page<ProductDomain> productPage) {
+        return new Page<>(
             productPage.content().stream()
                 .map(ProductResponse::fromDomain)
                 .collect(Collectors.toList()),
@@ -124,9 +159,6 @@ public class ProductController {
             productPage.pageSize(),
             productPage.totalPages()
         );
-
-        ProductListResponse response = ProductListResponse.fromPage(responsePage);
-        return Response.ok(response).build();
     }
 
     @PATCH
@@ -151,9 +183,24 @@ public class ProductController {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("ADMIN")
-    public Response deleteProduct(@PathParam("id") String id) {
-        deactivateProductUseCase.execute(id);
-        return Response.ok(MessageResponse.success("Product deleted successfully")).build();
+    @RolesAllowed({"SELLER", "ADMIN"})
+    public Response deleteProduct(
+            @PathParam("id") String id,
+            @Valid dri.commerce.product.presentation.dto.request.DeleteProductRequest request,
+            @Context SecurityContext securityContext
+    ) {
+        String userId = securityContext.getUserPrincipal().getName();
+        boolean isAdmin = securityContext.isUserInRole("ADMIN");
+        
+        DeactivateProductUseCase.HardDeleteCommand command = new DeactivateProductUseCase.HardDeleteCommand(
+            id,
+            request.confirmationName(),
+            userId,
+            isAdmin
+        );
+        
+        deactivateProductUseCase.executeHardDelete(command);
+        
+        return Response.ok(MessageResponse.success("Produto deletado permanentemente")).build();
     }
 }

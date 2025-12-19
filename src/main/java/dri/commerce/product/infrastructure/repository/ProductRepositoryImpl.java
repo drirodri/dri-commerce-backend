@@ -74,25 +74,51 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Page<ProductDomain> findAll(int page, int pageSize) {
-        PanacheQuery<ProductEntity> query = ProductEntity.findAll(Sort.descending("createdAt"));
-        query.page(page - 1, pageSize); // API é 1-indexed, Panache é 0-indexed
+    public Page<ProductDomain> findAllActive(int page, int pageSize) {
+        PanacheQuery<ProductEntity> query = ProductEntity.find("active = true", Sort.descending("createdAt"));
+        query.page(page - 1, pageSize);
 
         List<ProductDomain> products = query.list()
                 .stream()
                 .map(productMapper::toDomain)
                 .collect(Collectors.toList());
 
-    long totalElements = ProductEntity.count();
-    int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+        long totalElements = ProductEntity.count("active = true");
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
 
-    return new Page<>(
-        products,
-        totalElements,
-        page,
-        pageSize,
-        totalPages
-    );
+        return new Page<>(products, totalElements, page, pageSize, totalPages);
+    }
+
+    @Override
+    public Page<ProductDomain> findBySellerId(int page, int pageSize, String sellerId) {
+        PanacheQuery<ProductEntity> query = ProductEntity.find("sellerId = ?1", Sort.descending("createdAt"), sellerId);
+        query.page(page - 1, pageSize);
+
+        List<ProductDomain> products = query.list()
+                .stream()
+                .map(productMapper::toDomain)
+                .collect(Collectors.toList());
+
+        long totalElements = ProductEntity.count("sellerId = ?1", sellerId);
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        return new Page<>(products, totalElements, page, pageSize, totalPages);
+    }
+
+    @Override
+    public Page<ProductDomain> findAllIncludingInactive(int page, int pageSize) {
+        PanacheQuery<ProductEntity> query = ProductEntity.findAll(Sort.descending("createdAt"));
+        query.page(page - 1, pageSize);
+
+        List<ProductDomain> products = query.list()
+                .stream()
+                .map(productMapper::toDomain)
+                .collect(Collectors.toList());
+
+        long totalElements = ProductEntity.count();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        return new Page<>(products, totalElements, page, pageSize, totalPages);
     }
 
     @Override

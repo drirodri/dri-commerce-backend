@@ -12,7 +12,15 @@ public class ListAllProductsUseCase {
     @Inject
     ProductRepository productRepository;
 
-    public Page<ProductDomain> execute(int page, int pageSize) {
-        return productRepository.findAll(page, pageSize);
+    public Page<ProductDomain> executePublic(int page, int pageSize) {
+        return productRepository.findAllActive(page, pageSize);
+    }
+
+    public Page<ProductDomain> executeBySeller(int page, int pageSize, String sellerId) {
+        return productRepository.findBySellerId(page, pageSize, sellerId);
+    }
+
+    public Page<ProductDomain> executeAdmin(int page, int pageSize) {
+        return productRepository.findAllIncludingInactive(page, pageSize);
     }
 }

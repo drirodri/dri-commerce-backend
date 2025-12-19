@@ -1,11 +1,14 @@
 package dri.commerce.user.presentation.exception;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import dri.commerce.auth.domain.exception.InvalidCredentialsException;
 import dri.commerce.auth.domain.exception.InvalidTokenException;
 import dri.commerce.auth.domain.exception.RateLimitExceededException;
 import dri.commerce.product.domain.exception.InsufficientStockException;
+import dri.commerce.product.domain.exception.ProductAccessDeniedException;
+import dri.commerce.product.domain.exception.ProductNameMismatchException;
 import dri.commerce.product.domain.exception.ProductNotFoundException;
 import dri.commerce.user.domain.exception.EmailAlreadyExistsException;
 import dri.commerce.user.domain.exception.UserNotFoundException;
@@ -20,11 +23,15 @@ import jakarta.ws.rs.ext.Provider;
 @Provider
 public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
 
+    private static final Logger LOG = Logger.getLogger(GlobalExceptionHandler.class.getName());
+
     @Override
     public Response toResponse(Exception exception) {
         return switch (exception) {
             case UserNotFoundException ex -> handleNotFound(ex);
             case ProductNotFoundException ex -> handleProductNotFound(ex);
+            case ProductAccessDeniedException ex -> handleProductAccessDenied(ex);
+            case ProductNameMismatchException ex -> handleProductNameMismatch(ex);
             case EmailAlreadyExistsException ex -> handleConflict(ex);
             case WeakPasswordException ex -> handleBadRequest(ex);
             case InsufficientStockException ex -> handleInsufficientStock(ex);
@@ -47,6 +54,16 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     }
 
     private Response handleInsufficientStock(InsufficientStockException ex) {
+        ErrorResponse error = ErrorResponse.of(400, "Bad Request", ex.getMessage());
+        return Response.status(400).entity(error).build();
+    }
+
+    private Response handleProductAccessDenied(ProductAccessDeniedException ex) {
+        ErrorResponse error = ErrorResponse.of(403, "Forbidden", ex.getMessage());
+        return Response.status(403).entity(error).build();
+    }
+
+    private Response handleProductNameMismatch(ProductNameMismatchException ex) {
         ErrorResponse error = ErrorResponse.of(400, "Bad Request", ex.getMessage());
         return Response.status(400).entity(error).build();
     }
@@ -82,7 +99,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
             )
         );
         return Response.status(429)
-                .header("Retry-After", ex.getMinutesUntilReset() * 60) // em segundos
+                .header("Retry-After", ex.getMinutesUntilReset() * 60)
                 .entity(error)
                 .build();
     }
@@ -98,11 +115,8 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     }
 
     private Response handleGenericError(Exception ex) {
-        // Log completo interno para debugging
-        java.util.logging.Logger.getLogger(GlobalExceptionHandler.class.getName())
-            .severe("Erro interno não tratado: " + ex.getMessage());
+        LOG.severe("Erro interno não tratado: " + ex.getMessage());
         
-        // Mensagem genérica para o cliente - não expõe detalhes internos
         ErrorResponse error = ErrorResponse.of(500, "Internal Server Error", "An unexpected error occurred");
         return Response.status(500).entity(error).build();
     }

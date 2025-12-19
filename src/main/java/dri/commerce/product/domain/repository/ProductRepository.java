@@ -16,11 +16,15 @@ public interface ProductRepository {
 
     Optional<ProductDomain> findById(ProductId id);
 
+    Page<ProductDomain> findAllActive(int page, int pageSize);
+    
+    Page<ProductDomain> findBySellerId(int page, int pageSize, String sellerId);
+    
+    Page<ProductDomain> findAllIncludingInactive(int page, int pageSize);
+
     List<ProductDomain> findAllActive();
 
     List<ProductDomain> getAllProducts();
-
-    Page<ProductDomain> findAll(int page, int pageSize);
 
     List<ProductDomain> findBySellerId(UserId sellerId);
 
