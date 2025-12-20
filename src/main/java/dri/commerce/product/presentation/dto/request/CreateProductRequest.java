@@ -27,7 +27,6 @@ public record CreateProductRequest(
         @Size(max = 50, message = "Condition cannot exceed 50 characters")
         String condition,
 
-        @Size(max = 100, message = "Category ID cannot exceed 100 characters")
-        String categoryId
+        Long categoryId
 ) {
 }

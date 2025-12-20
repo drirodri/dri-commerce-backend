@@ -26,7 +26,7 @@ public class UpdateProductUseCase {
         Price price = command.price() != null ? Price.from(command.price()) : existingProduct.price();
         String thumbnail = command.thumbnail() != null ? command.thumbnail() : existingProduct.thumbnail();
         String condition = command.condition() != null ? command.condition() : existingProduct.condition();
-        String categoryId = command.categoryId() != null ? command.categoryId() : existingProduct.categoryId();
+        Long categoryId = command.categoryId() != null ? command.categoryId() : existingProduct.categoryId();
 
         ProductDomain updatedProduct = existingProduct.updateInfo(title, price, thumbnail, condition, categoryId);
 
@@ -44,7 +44,7 @@ public class UpdateProductUseCase {
             String thumbnail,
             Integer availableQuantity,
             String condition,
-            String categoryId
+            Long categoryId
     ) {
     }
 }

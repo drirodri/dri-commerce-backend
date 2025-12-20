@@ -39,8 +39,8 @@ public class ProductEntity extends PanacheEntityBase {
     @Column(length = 50)
     public String condition;
 
-    @Column(name = "category_id", length = 100)
-    public String categoryId;
+    @Column(name = "category_id")
+    public Long categoryId;
 
     @Column(name = "seller_id", nullable = false, length = 36)
     public String sellerId;
@@ -58,7 +58,7 @@ public class ProductEntity extends PanacheEntityBase {
     }
 
     public ProductEntity(String id, String title, BigDecimal price, String thumbnail,
-                         Integer availableQuantity, String condition, String categoryId,
+                         Integer availableQuantity, String condition, Long categoryId,
                          String sellerId, LocalDateTime createdAt, LocalDateTime updatedAt,
                          boolean active) {
         this.id = id;

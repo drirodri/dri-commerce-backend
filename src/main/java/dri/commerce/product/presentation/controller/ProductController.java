@@ -1,6 +1,5 @@
 package dri.commerce.product.presentation.controller;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import dri.commerce.product.application.usecase.ActivateProductUseCase;

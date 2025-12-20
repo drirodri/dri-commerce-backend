@@ -42,7 +42,7 @@ public class CreateProductUseCase {
             String thumbnail,
             Integer availableQuantity,
             String condition,
-            String categoryId,
+            Long categoryId,
             String sellerId
     ) {
     }

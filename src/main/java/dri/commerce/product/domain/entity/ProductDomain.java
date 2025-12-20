@@ -34,8 +34,7 @@ public record ProductDomain(
         @Size(max = 50, message = "Condition cannot exceed 50 characters")
         String condition,
 
-        @Size(max = 100, message = "Category ID cannot exceed 100 characters")
-        String categoryId,
+        Long categoryId,
 
         @Valid
         @NotNull(message = "Seller ID cannot be null")
@@ -59,14 +58,14 @@ public record ProductDomain(
 
     public static ProductDomain create(String title, Price price, String thumbnail,
                                        Integer availableQuantity, String condition,
-                                       String categoryId, UserId sellerId) {
+                                       Long categoryId, UserId sellerId) {
         LocalDateTime now = LocalDateTime.now();
         return new ProductDomain(null, title, price, thumbnail, availableQuantity,
                 condition, categoryId, sellerId, now, now, true);
     }
 
     public static ProductDomain restore(ProductId id, String title, Price price, String thumbnail,
-                                        Integer availableQuantity, String condition, String categoryId,
+                                        Integer availableQuantity, String condition, Long categoryId,
                                         UserId sellerId, LocalDateTime createdAt,
                                         LocalDateTime updatedAt, Boolean active) {
         return new ProductDomain(id, title, price, thumbnail, availableQuantity,
@@ -82,7 +81,7 @@ public record ProductDomain(
     }
 
     public ProductDomain updateInfo(String newTitle, Price newPrice, String newThumbnail,
-                                    String newCondition, String newCategoryId) {
+                                    String newCondition, Long newCategoryId) {
         return new ProductDomain(
                 this.id,
                 newTitle,

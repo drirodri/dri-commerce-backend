@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import dri.commerce.auth.domain.exception.InvalidCredentialsException;
 import dri.commerce.auth.domain.exception.InvalidTokenException;
 import dri.commerce.auth.domain.exception.RateLimitExceededException;
+import dri.commerce.category.domain.exception.CategoryNotFoundException;
 import dri.commerce.product.domain.exception.InsufficientStockException;
 import dri.commerce.product.domain.exception.ProductAccessDeniedException;
 import dri.commerce.product.domain.exception.ProductNameMismatchException;
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
         return switch (exception) {
             case UserNotFoundException ex -> handleNotFound(ex);
             case ProductNotFoundException ex -> handleProductNotFound(ex);
+            case CategoryNotFoundException ex -> handleCategoryNotFound(ex);
             case ProductAccessDeniedException ex -> handleProductAccessDenied(ex);
             case ProductNameMismatchException ex -> handleProductNameMismatch(ex);
             case EmailAlreadyExistsException ex -> handleConflict(ex);
@@ -49,6 +51,11 @@ public class GlobalExceptionHandler implements ExceptionMapper<Exception> {
     }
 
     private Response handleProductNotFound(ProductNotFoundException ex) {
+        ErrorResponse error = ErrorResponse.of(404, "Not Found", ex.getMessage());
+        return Response.status(404).entity(error).build();
+    }
+
+    private Response handleCategoryNotFound(CategoryNotFoundException ex) {
         ErrorResponse error = ErrorResponse.of(404, "Not Found", ex.getMessage());
         return Response.status(404).entity(error).build();
     }

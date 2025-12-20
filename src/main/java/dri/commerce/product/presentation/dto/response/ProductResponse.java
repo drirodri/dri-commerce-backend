@@ -12,7 +12,7 @@ public record ProductResponse(
         String thumbnail,
         Integer availableQuantity,
         String condition,
-        String categoryId,
+        Long categoryId,
         String sellerId,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
