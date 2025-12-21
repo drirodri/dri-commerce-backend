@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import dri.commerce.user.domain.entity.Page;
 import dri.commerce.user.domain.entity.UserDomain;
+import dri.commerce.user.domain.enums.Role;
 import dri.commerce.user.domain.valueobject.UserEmail;
 import dri.commerce.user.domain.valueobject.UserId;
 
@@ -33,4 +34,6 @@ public interface UserRepository {
     long count();
 
     List<UserDomain> findByNameContaining(String name);
+
+    List<UserDomain> findByRole(Role role);
 }

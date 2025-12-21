@@ -139,6 +139,26 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public Page<ProductDomain> findByCategoryId(int page, int pageSize, Long categoryId) {
+        PanacheQuery<ProductEntity> query = ProductEntity.find(
+                "categoryId = ?1 and active = true", 
+                Sort.descending("createdAt"), 
+                categoryId
+        );
+        query.page(page - 1, pageSize);
+
+        List<ProductDomain> products = query.list()
+                .stream()
+                .map(productMapper::toDomain)
+                .collect(Collectors.toList());
+
+        long totalElements = ProductEntity.count("categoryId = ?1 and active = true", categoryId);
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
+
+        return new Page<>(products, totalElements, page, pageSize, totalPages);
+    }
+
+    @Override
     public List<ProductDomain> findByTitleContaining(String title) {
         return ProductEntity.<ProductEntity>list("LOWER(title) LIKE ?1 and active = true",
                         Sort.descending("createdAt"), "%" + title.toLowerCase() + "%")

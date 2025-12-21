@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import dri.commerce.user.domain.entity.Page;
 import dri.commerce.user.domain.entity.UserDomain;
+import dri.commerce.user.domain.enums.Role;
 import dri.commerce.user.domain.repository.UserRepository;
 import dri.commerce.user.domain.valueobject.UserEmail;
 import dri.commerce.user.domain.valueobject.UserId;
@@ -107,6 +108,15 @@ public class UserRepositoryImpl implements PanacheRepositoryBase<UserEntity, Str
     @Override
     public List<UserDomain> findByNameContaining(String name) {
         return find("LOWER(name) LIKE LOWER(?1)", "%" + name + "%")
+                .list()
+                .stream()
+                .map(userMapper::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDomain> findByRole(Role role) {
+        return find("role", role.getCode())
                 .list()
                 .stream()
                 .map(userMapper::toDomain)

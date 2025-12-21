@@ -7,6 +7,7 @@ import dri.commerce.user.domain.entity.UserDomain;
 import dri.commerce.user.domain.enums.Role;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -19,7 +20,7 @@ public class DatabaseAdminSeeder {
 
     private static final Logger LOG = Logger.getLogger(DatabaseAdminSeeder.class);
 
-    void seedAdmin(@Observes StartupEvent event) {
+    void seedAdmin(@Observes @Priority(10) StartupEvent event) {
         LOG.info("DatabaseAdminSeeder: inicializando seed do admin (modo dev)...");
         
         String adminEmail = System.getenv("ADMIN_EMAIL");

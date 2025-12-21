@@ -23,4 +23,8 @@ public class ListAllProductsUseCase {
     public Page<ProductDomain> executeAdmin(int page, int pageSize) {
         return productRepository.findAllIncludingInactive(page, pageSize);
     }
+
+    public Page<ProductDomain> executeByCategory(int page, int pageSize, Long categoryId) {
+        return productRepository.findByCategoryId(page, pageSize, categoryId);
+    }
 }

@@ -30,6 +30,8 @@ public interface ProductRepository {
 
     List<ProductDomain> findByCategoryId(String categoryId);
 
+    Page<ProductDomain> findByCategoryId(int page, int pageSize, Long categoryId);
+
     List<ProductDomain> findByTitleContaining(String title);
 
     boolean deleteById(ProductId id);

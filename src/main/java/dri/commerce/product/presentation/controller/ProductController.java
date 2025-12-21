@@ -136,6 +136,21 @@ public class ProductController {
     }
 
     @GET
+    @Path("/category/{categoryId}")
+    public Response listProductsByCategory(
+            @PathParam("categoryId") Long categoryId,
+            @BeanParam PageRequest pageRequest
+    ) {
+        int page = pageRequest.page() != null ? pageRequest.page() : 1;
+        int pageSize = pageRequest.pageSize() != null ? pageRequest.pageSize() : 20;
+
+        Page<ProductDomain> productPage = listAllProductsUseCase.executeByCategory(page, pageSize, categoryId);
+
+        ProductListResponse response = ProductListResponse.fromPage(toResponsePage(productPage));
+        return Response.ok(response).build();
+    }
+
+    @GET
     @Path("/all")
     @RolesAllowed("ADMIN")
     public Response listAllProducts(@BeanParam PageRequest pageRequest) {
